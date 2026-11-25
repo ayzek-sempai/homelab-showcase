@@ -16,8 +16,8 @@ Every change is a pull request. A merged PR is the only way anything reaches a m
 <p align="center"><sub><b>The production environment.</b> Two PCs, a switch, a router, a UPS and a desk. Cable management is a future phase. If it works, it works.</sub></p>
 
 > This is the public showcase of a private GitOps repository. The playbooks, the encrypted secrets, the runbooks
-> and the captures of the hosts stay private. What you see here is a snapshot: the numbers, the status map and
-> the screenshots are from 2026-11-21 to 2026-11-22.
+> and the captures of the hosts stay private. What you see here is a snapshot: the numbers and the status map
+> are from 2026-11-26, the screenshots from 2026-11-21 to 2026-11-22.
 
 ---
 
@@ -33,15 +33,15 @@ Every change is a pull request. A merged PR is the only way anything reaches a m
 
 ## At a glance
 
-<!-- Numbers as of 2026-11-22. Source: ansible/inventory, `git log`, `gh pr list`, stacks/monitoring. -->
+<!-- Numbers as of 2026-11-26. Source: ansible/inventory, `git log`, `gh pr list`, stacks/monitoring. -->
 
 | | | | |
 | :---: | :---: | :---: | :---: |
-| **24** machines in the inventory | **18** LXCs, **2** VMs, **2** Proxmox nodes, **2** VPSes | **18** Ansible roles | **19** playbooks |
-| **109** merged pull requests | **273** commits in 31 days | **4** Compose stacks, every image pinned | **11** pinned tool versions in `versions.yml` |
-| **7** Grafana dashboards, **91** panels | **14** alert rules, **14** unit tests | **30 days** of logs in Loki | **22** runbooks, **4** decision records |
+| **25** machines in the inventory | **19** LXCs, **2** VMs, **2** Proxmox nodes, **2** VPSes | **28** Ansible roles | **28** playbooks |
+| **187** merged pull requests | **352** commits in 35 days | **4** Compose stacks, every image pinned | **27** pinned versions in `versions.yml` |
+| **7** Grafana dashboards, **101** panels | **20** alert rules, **18** with unit tests | **30 days** of logs in Loki | **31** runbooks, **8** decision records |
 
-About 12,000 lines of YAML, Python and shell. Nothing is exposed to the internet today, on purpose.
+About 11,000 lines of YAML, Python and shell. Very little is open to the internet, on purpose: each public path is added one at a time, after its written conditions are met.
 
 ---
 
@@ -64,7 +64,7 @@ flowchart LR
     subgraph VPS["VPSes (public IPs)"]
         direction TB
         GR["vps-gr<br/>IONOS, Germany<br/>AmneziaWG"]:::vps
-        UZ["vps-uz<br/>Uzbekistan<br/>AmneziaWG, Caddy, ZeroTier moon"]:::vps
+        UZ["vps-uz<br/>Uzbekistan<br/>AmneziaWG, Caddy, ZeroTier moon,<br/>game port"]:::vps
     end
 
     subgraph HOME["Home LAN"]
@@ -75,10 +75,12 @@ flowchart LR
             ADG["AdGuard LXC<br/>DNS"]:::home
         end
         subgraph PROXMOX["proxmox (Proxmox, ZFS tank)"]
-            WGCT["wireguard LXC<br/>wg1 and wg2 clients,<br/>tunnel watchdog"]:::home
+            WGCT["wireguard LXC<br/>wg1, wg2 and wg4 clients,<br/>tunnel watchdog"]:::home
             RUN["runner LXC<br/>GitHub Actions"]:::ops
             MON["monitoring LXC<br/>Prometheus, Loki,<br/>Grafana, Alertmanager"]:::ops
-            APPS["Jellyfin, Immich, Nextcloud,<br/>the arr stack, NPM, Pulse"]:::home
+            APPS["Jellyfin, Immich, Seerr,<br/>the arr stack, NPM, Pulse"]:::home
+            VAULT["vault and SSO LXCs<br/>Vaultwarden, Authelia"]:::home
+            GAME["game LXC<br/>Minecraft"]:::home
         end
     end
 
@@ -90,11 +92,13 @@ flowchart LR
     RUN -- "Ansible over SSH" --> GPU
     RUN -- "Ansible over SSH" --> MON
     MON -- "alerts" --> TG
+    VAULT -- "encrypted backup" --> VPS
+    UZ -- "game port" --> GAME
     GPU <-- "bot" --> TG
     GPU <-- "tasks" --> JIRA
 ```
 
-The VPSes are also meant to act as a dead-man switch: if home stops answering, they message Telegram on their own, because the monitoring stack that would normally send the alert is the thing that went down. The `home_watch` role is written and tested against stubs; it is applied by hand, one VPS at a time, and has not been applied yet.
+The VPSes also act as a dead-man switch: if home stops answering, they message Telegram on their own, because the monitoring stack that would normally send the alert is the thing that went down. The `home_watch` role runs on both VPSes and on the monitoring LXC (`home_online` says when home is back), and is applied by hand, one machine at a time. Apart from one game port on `vps-uz`, nothing is reachable from outside: the laptop and phones get in through the same AmneziaWG tunnels.
 
 ---
 
@@ -114,7 +118,7 @@ flowchart LR
 
 - **Check mode comes first, always.** Nothing changes a live host until its diff is empty in `--check --diff`.
 - **Two tiers of trust.** The runner deploys Docker stacks only. Anything that touches the VPN, the firewall, Caddy or the Proxmox hosts runs from the laptop, one VPS per run.
-- **Pinned everything.** No `latest` tags. Every image is pinned by digest and binaries by version and SHA-256. `versions.yml` is wired for Renovate, which is configured but whose app is not installed yet, so bumps are manual for now.
+- **Pinned everything.** No `latest` tags. Every image is pinned by digest and binaries by version and SHA-256. `versions.yml` is watched by Renovate, which opens the update PRs. Updating an app inside its LXC stays a manual step with a dump or snapshot first (updates runbook); Renovate's PR only records the new version.
 - **Docs travel with code.** A PR that changes `ansible/roles/` or `stacks/` has to touch `docs/`, and CI checks it.
 
 ### Secrets
@@ -136,13 +140,13 @@ Grafana Alloy on the six machines that matter (both Proxmox nodes, the GPU VM, t
 
 | | |
 | --- | --- |
-| **Metrics** | Prometheus, 30 s scrape, node, ZFS, SMART, GPU, AmneziaWG handshakes, blackbox probes of DNS and the Telegram API |
+| **Metrics** | Prometheus, 30 s scrape, node, ZFS, SMART, GPU, AmneziaWG handshakes, OPNsense through its node exporter, blackbox probes of DNS and the Telegram API |
 | **Logs** | Loki, 30 days, journald from those six machines, with a receiver for OPNsense syslog |
 | **Alerts** | Alertmanager to Telegram with readable messages |
 | **Dashboards** | Home, Homelab overview, Network, VPS (Germany and Uzbekistan), Disks and tunnels, Logs, Monitoring stack. All provisioned from the repo |
 
-The 14 alert rules each have a unit test run by `promtool` in CI:
-`Watchdog` · `HostSilent` · `DiskUsageHigh` · `DiskUsageCritical` · `LxcDiskUsageHigh` · `LxcDiskUsageCritical` · `DnsProbeFailing` · `MemoryPressure` · `SystemdUnitFailed` · `TunnelHandshakeStale` · `AwgWatchdogRestarted` · `ZfsPoolNotOnline` · `SmartDegrading` · `GpuTooHot`
+The 20 alert rules. All but `ZfsPoolNotOnline` and `SmartDegrading` have a unit test run by `promtool` in CI (those two tests are an open item):
+`Watchdog` · `HostSilent` · `DiskUsageHigh` · `DiskUsageCritical` · `LxcDiskUsageHigh` · `LxcDiskUsageCritical` · `DnsProbeFailing` · `MemoryPressure` · `OpnsenseMemoryLow` · `SystemdUnitFailed` · `TunnelHandshakeStale` · `AwgWatchdogRestarted` · `ZfsPoolNotOnline` · `SmartDegrading` · `GpuTooHot` · `VaultBackupStale` · `VaultBackupMetricMissing` · `VaultConnectorDown` · `VaultTunnelAllDown` · `VaultPublicProbeFailing`
 
 ---
 
@@ -154,21 +158,29 @@ The 14 alert rules each have a unit test run by `promtool` in CI:
 | 1 | Ansible baseline, check mode first | Running |
 | 2 | CI, self-hosted runner, deploy on merge | Running |
 | 3 | Docker stacks from the repo, SOPS-rendered env files | Running |
-| 4 | Version pins and a weekly update report | Partly. Renovate app not installed yet |
-| 5 | Prometheus, Loki, Grafana, Alertmanager, Telegram alerts | Running. The home watcher is written, not applied |
+| 4 | Version pins and a weekly update report | Running. Renovate opens the update PRs |
+| 5 | Prometheus, Loki, Grafana, Alertmanager, Telegram alerts | Running, with OPNsense metrics and syslog and a home watcher on each VPS and on the monitoring machine |
 | 6 | App images built by their own repos, pulled from GHCR, pinned by digest | Running for Riga and the Jira bot |
-| 7 | Backups and ZFS snapshots | Drafted, waits on a backup disk |
+| 7 | Backups and ZFS snapshots | Drafted, waits on hardware |
 | 8 | Jira life bot: digest, weekly review, natural-language task entry | Running, still growing |
-| 9 | Local LLM on the GPU VM (Ollama), 90% on a 30-message accuracy test | In progress |
-| 11 | Public services | Design only. Nothing is public |
+| 9 | Local LLM on the GPU VM (Ollama), 90% on a 30-message accuracy test | Running |
+| 10 | Rotate exposed secrets | Partly done: new Telegram and Jira tokens; the AmneziaWG 2.0 move goes in steps |
+| 11 | Public services | Opened one at a time, each behind written conditions (decision 0008). A game port is the first |
+| next | Home portal, password vault and single sign-on | The vault and Authelia run at home (0006); nothing sits behind single sign-on yet. The portal's configuration is drafted in `homepage/` (0007) |
 
 Details, open items and findings are tracked in docs/plan.md.
 
 ### Highlights
 
-- **AmneziaWG on a kernel it was not built for.** The VPN kernel module is built from pinned tags through DKMS, so a kernel update can no longer silently break a tunnel at the next reboot. A watchdog restarts any tunnel whose handshake goes stale.
+- **A backup the server cannot read.** The password vault's backup is encrypted inside its container to a public key, pushed to an upload-only account on each VPS, and taken out of that account's reach by a root timer. Neither the container nor the VPSes can read it. The restore test starts a throwaway vault from a copy and asks you to log in.
+- **Public access with a fence around it.** The tooling for a tunnelled service puts a firewall rule at home that limits what the VPSes' own addresses can reach, a health check that stops a connector which cannot reach its service, and a publish script that refuses while any condition is unmet.
+
+- **AmneziaWG on a kernel it was not built for.** The VPN kernel module is built from pinned tags through DKMS, so a kernel update can no longer silently break a tunnel at the next reboot. A watchdog restarts any tunnel whose handshake goes stale, then checks 90 seconds later whether the restart worked and counts the result.
 - **A life bot, not just a homelab.** A Telegram bot backed by Jira sends a morning digest and a weekly review, and is learning to parse plain-language tasks with a local model. A button press confirms before anything is created, changed or closed.
-- **Lessons written down.** docs/gotchas.md records what went wrong and why: a full OPNsense disk that looked like random DNS failures, UDP ports that one firewall passed and another dropped, a config diff that printed a private key.
+- **Lessons written down.** docs/gotchas.md records what went wrong and why: a full OPNsense disk that looked like random DNS failures, UDP ports that one firewall passed and another dropped, a config diff that printed a private key, and a home connection that drops the tail of any burst of more than 4 UDP packets, which is exactly how an AmneziaWG handshake is sent.
+
+- **Every internal URL is a reviewed file.** `npm/hosts.yaml` holds all the proxy hosts and `scripts/npmctl.py` plans and applies it, so adding or moving a name is a pull request. The move of every name from `.xyz` to `.uz` ran through it.
+- **Major updates with a way back.** On 2026-11-24 four app majors (Immich 3, Radarr 7, Prowlarr 3, AdGuard Home 1.0) and later Jellyfin 12 and Seerr went in the same way: read the changelog, take a dump or snapshot, update, check, keep the way back for three days. What did not fit waited, with the reason written down. Two surprises are in gotchas: Jellyseerr could not sign in to Jellyfin 12, and Seerr's prebuilt database driver needed a newer system library than the container had.
 
 ## Screenshots
 
@@ -189,8 +201,10 @@ All of these are live and provisioned from this repo, except the Proxmox console
 ## Repository layout (private repo)
 
 ```
-ansible/       inventory, 18 roles, 19 playbooks
+ansible/       inventory, 28 roles, 28 playbooks
 stacks/        Docker Compose stacks, one folder per host and service
+npm/           the proxy hosts as a reviewed file (scripts/npmctl.py applies it)
+homepage/      the home portal's configuration (draft, not applied)
 secrets/       SOPS-encrypted files only
 monitoring/    rules, dashboards and Loki config live under stacks/monitoring
 docs/          architecture, plan, gotchas, runbooks, decisions

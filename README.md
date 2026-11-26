@@ -38,7 +38,7 @@ Every change is a pull request. A merged PR is the only way anything reaches a m
 | | | | |
 | :---: | :---: | :---: | :---: |
 | **25** machines in the inventory | **19** LXCs, **2** VMs, **2** Proxmox nodes, **2** VPSes | **28** Ansible roles | **28** playbooks |
-| **187** merged pull requests | **352** commits in 35 days | **4** Compose stacks, every image pinned | **27** pinned versions in `versions.yml` |
+| **194** merged pull requests | **359** commits in 35 days | **4** Compose stacks, every image pinned | **27** pinned versions in `versions.yml` |
 | **7** Grafana dashboards, **101** panels | **20** alert rules, **18** with unit tests | **30 days** of logs in Loki | **31** runbooks, **8** decision records |
 
 About 11,000 lines of YAML, Python and shell. Very little is open to the internet, on purpose: each public path is added one at a time, after its written conditions are met.
@@ -172,7 +172,7 @@ Details, open items and findings are tracked in docs/plan.md.
 
 ### Highlights
 
-- **A backup the server cannot read.** The password vault's backup is encrypted inside its container to a public key, pushed to an upload-only account on each VPS, and taken out of that account's reach by a root timer. Neither the container nor the VPSes can read it. The restore test starts a throwaway vault from a copy and asks you to log in.
+- **A backup the server cannot read.** The password vault's nightly backup is encrypted inside its container to a public key, pushed to an upload-only account on each VPS, and taken out of that account's reach by a root timer. Neither the container nor the VPSes can read it. The restore test starts a throwaway vault from a copy and asks you to log in.
 - **Public access with a fence around it.** The tooling for a tunnelled service puts a firewall rule at home that limits what the VPSes' own addresses can reach, a health check that stops a connector which cannot reach its service, and a publish script that refuses while any condition is unmet.
 
 - **AmneziaWG on a kernel it was not built for.** The VPN kernel module is built from pinned tags through DKMS, so a kernel update can no longer silently break a tunnel at the next reboot. A watchdog restarts any tunnel whose handshake goes stale, then checks 90 seconds later whether the restart worked and counts the result.

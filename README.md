@@ -38,7 +38,7 @@ Every change is a pull request. A merged PR is the only way anything reaches a m
 | | | | |
 | :---: | :---: | :---: | :---: |
 | **25** machines in the inventory | **19** LXCs, **2** VMs, **2** Proxmox nodes, **2** VPSes | **28** Ansible roles | **28** playbooks |
-| **194** merged pull requests | **359** commits in 35 days | **4** Compose stacks, every image pinned | **27** pinned versions in `versions.yml` |
+| **201** merged pull requests | **366** commits in 36 days | **4** Compose stacks, every image pinned | **27** pinned versions in `versions.yml` |
 | **7** Grafana dashboards, **101** panels | **20** alert rules, **18** with unit tests | **30 days** of logs in Loki | **31** runbooks, **8** decision records |
 
 About 11,000 lines of YAML, Python and shell. Very little is open to the internet, on purpose: each public path is added one at a time, after its written conditions are met.
@@ -60,6 +60,7 @@ flowchart LR
     GH["GitHub<br/>PRs, CI, GHCR"]:::ext
     TG["Telegram<br/>alerts and bot"]:::ext
     JIRA["Jira<br/>LIFE, HOMELAB"]:::ext
+    CF["Cloudflare<br/>Tunnel"]:::ext
 
     subgraph VPS["VPSes (public IPs)"]
         direction TB
@@ -94,11 +95,14 @@ flowchart LR
     MON -- "alerts" --> TG
     VAULT -- "encrypted backup" --> VPS
     UZ -- "game port" --> GAME
+    CF -- "vault" --> GR
+    CF -- "vault" --> UZ
+    WGCT -- "vault" --> VAULT
     GPU <-- "bot" --> TG
     GPU <-- "tasks" --> JIRA
 ```
 
-The VPSes also act as a dead-man switch: if home stops answering, they message Telegram on their own, because the monitoring stack that would normally send the alert is the thing that went down. The `home_watch` role runs on both VPSes and on the monitoring LXC (`home_online` says when home is back), and is applied by hand, one machine at a time. Apart from one game port on `vps-uz`, nothing is reachable from outside: the laptop and phones get in through the same AmneziaWG tunnels.
+The VPSes also act as a dead-man switch: if home stops answering, they message Telegram on their own, because the monitoring stack that would normally send the alert is the thing that went down. The `home_watch` role runs on both VPSes and on the monitoring LXC (`home_online` says when home is back), and is applied by hand, one machine at a time. Two things are reachable from outside: the password vault, through a Cloudflare Tunnel with a connector on each VPS and the vault's own login, and one game port on `vps-uz`. For everything else the laptop and phones get in through the same AmneziaWG tunnels.
 
 ---
 
@@ -165,7 +169,7 @@ The 20 alert rules. All but `ZfsPoolNotOnline` and `SmartDegrading` have a unit 
 | 8 | Jira life bot: digest, weekly review, natural-language task entry | Running, still growing |
 | 9 | Local LLM on the GPU VM (Ollama), 90% on a 30-message accuracy test | Running |
 | 10 | Rotate exposed secrets | Partly done: new Telegram and Jira tokens; the AmneziaWG 2.0 move goes in steps |
-| 11 | Public services | Opened one at a time, each behind written conditions (decision 0008). A game port is the first |
+| 11 | Public services | Opened one at a time, each behind written conditions (decision 0008). A game port was the first, the password vault the second |
 | next | Home portal, password vault and single sign-on | The vault and Authelia run at home (0006); nothing sits behind single sign-on yet. The portal's configuration is drafted in `homepage/` (0007) |
 
 Details, open items and findings are tracked in docs/plan.md.

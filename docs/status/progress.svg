@@ -8,11 +8,10 @@
 <rect x="482" y="24" width="10" height="10" rx="2" fill="#6e7681"/><text x="497" y="33" font-size="11" fill="#8b949e">open</text>
 <rect x="536" y="24" width="10" height="10" rx="2" fill="#388bfd"/><text x="551" y="33" font-size="11" fill="#8b949e">deferred</text>
 <text x="24" y="79" font-size="12.5">0  Baseline and inventory</text>
-<rect x="290.0" y="68" width="275.0" height="16" fill="#2ea043"/>
-<rect x="565.0" y="68" width="27.5" height="16" fill="#d29922"/>
-<rect x="592.5" y="68" width="27.5" height="16" fill="#6e7681"/>
+<rect x="290.0" y="68" width="302.5" height="16" fill="#2ea043"/>
+<rect x="592.5" y="68" width="27.5" height="16" fill="#d29922"/>
 <rect x="290" y="68" width="330" height="16" rx="3" fill="none" stroke="#30363d"/>
-<text x="634" y="80" font-size="12" fill="#8b949e">10 of 12 done</text>
+<text x="634" y="80" font-size="12" fill="#8b949e">11 of 12 done</text>
 <text x="24" y="109" font-size="12.5">1  Ansible baseline, check mode only</text>
 <rect x="290.0" y="98" width="188.6" height="16" fill="#2ea043"/>
 <rect x="478.6" y="98" width="94.3" height="16" fill="#d29922"/>
@@ -20,15 +19,13 @@
 <rect x="290" y="98" width="330" height="16" rx="3" fill="none" stroke="#30363d"/>
 <text x="634" y="110" font-size="12" fill="#8b949e">4 of 7 done</text>
 <text x="24" y="139" font-size="12.5">2  CI and deploy</text>
-<rect x="290.0" y="128" width="132.0" height="16" fill="#2ea043"/>
-<rect x="422.0" y="128" width="198.0" height="16" fill="#d29922"/>
+<rect x="290.0" y="128" width="330.0" height="16" fill="#2ea043"/>
 <rect x="290" y="128" width="330" height="16" rx="3" fill="none" stroke="#30363d"/>
-<text x="634" y="140" font-size="12" fill="#8b949e">2 of 5 done</text>
+<text x="634" y="140" font-size="12" fill="#8b949e">6 of 6 done</text>
 <text x="24" y="169" font-size="12.5">3  Docker stacks</text>
-<rect x="290.0" y="158" width="110.0" height="16" fill="#2ea043"/>
-<rect x="400.0" y="158" width="220.0" height="16" fill="#d29922"/>
+<rect x="290.0" y="158" width="330.0" height="16" fill="#2ea043"/>
 <rect x="290" y="158" width="330" height="16" rx="3" fill="none" stroke="#30363d"/>
-<text x="634" y="170" font-size="12" fill="#8b949e">1 of 3 done</text>
+<text x="634" y="170" font-size="12" fill="#8b949e">3 of 3 done</text>
 <text x="24" y="199" font-size="12.5">4  Versions and digest</text>
 <rect x="290.0" y="188" width="165.0" height="16" fill="#2ea043"/>
 <rect x="455.0" y="188" width="82.5" height="16" fill="#d29922"/>
@@ -36,25 +33,28 @@
 <rect x="290" y="188" width="330" height="16" rx="3" fill="none" stroke="#30363d"/>
 <text x="634" y="200" font-size="12" fill="#8b949e">2 of 4 done</text>
 <text x="24" y="229" font-size="12.5">5  Monitoring and logs</text>
-<rect x="290.0" y="218" width="330.0" height="16" fill="#d29922"/>
+<rect x="290.0" y="218" width="192.5" height="16" fill="#2ea043"/>
+<rect x="482.5" y="218" width="82.5" height="16" fill="#d29922"/>
+<rect x="565.0" y="218" width="55.0" height="16" fill="#6e7681"/>
 <rect x="290" y="218" width="330" height="16" rx="3" fill="none" stroke="#30363d"/>
-<text x="634" y="230" font-size="12" fill="#8b949e">0 of 7 done</text>
+<text x="634" y="230" font-size="12" fill="#8b949e">7 of 12 done</text>
 <text x="24" y="259" font-size="12.5">6  App chaining</text>
 <rect x="290.0" y="248" width="82.5" height="16" fill="#2ea043"/>
-<rect x="372.5" y="248" width="247.5" height="16" fill="#6e7681"/>
+<rect x="372.5" y="248" width="82.5" height="16" fill="#d29922"/>
+<rect x="455.0" y="248" width="165.0" height="16" fill="#6e7681"/>
 <rect x="290" y="248" width="330" height="16" rx="3" fill="none" stroke="#30363d"/>
 <text x="634" y="260" font-size="12" fill="#8b949e">1 of 4 done</text>
 <text x="24" y="289" font-size="12.5">7  Docs and hardening</text>
-<rect x="290.0" y="278" width="165.0" height="16" fill="#d29922"/>
-<rect x="455.0" y="278" width="165.0" height="16" fill="#6e7681"/>
+<rect x="290.0" y="278" width="247.5" height="16" fill="#d29922"/>
+<rect x="537.5" y="278" width="82.5" height="16" fill="#6e7681"/>
 <rect x="290" y="278" width="330" height="16" rx="3" fill="none" stroke="#30363d"/>
 <text x="634" y="290" font-size="12" fill="#8b949e">0 of 4 done</text>
 <text x="24" y="319" font-size="12.5">8  Jira bot fixes and HOMELAB project</text>
-<rect x="290.0" y="308" width="117.9" height="16" fill="#2ea043"/>
-<rect x="407.9" y="308" width="117.9" height="16" fill="#d29922"/>
-<rect x="525.7" y="308" width="94.3" height="16" fill="#6e7681"/>
+<rect x="290.0" y="308" width="188.6" height="16" fill="#2ea043"/>
+<rect x="478.6" y="308" width="70.7" height="16" fill="#d29922"/>
+<rect x="549.3" y="308" width="70.7" height="16" fill="#6e7681"/>
 <rect x="290" y="308" width="330" height="16" rx="3" fill="none" stroke="#30363d"/>
-<text x="634" y="320" font-size="12" fill="#8b949e">5 of 14 done</text>
+<text x="634" y="320" font-size="12" fill="#8b949e">8 of 14 done</text>
 <text x="24" y="349" font-size="12.5">9  Local LLM text assistant</text>
 <rect x="290.0" y="338" width="110.0" height="16" fill="#2ea043"/>
 <rect x="400.0" y="338" width="165.0" height="16" fill="#d29922"/>
@@ -68,10 +68,10 @@
 <rect x="290" y="368" width="330" height="16" rx="3" fill="none" stroke="#30363d"/>
 <text x="634" y="380" font-size="12" fill="#8b949e">1 of 4 done</text>
 <text x="24" y="409" font-size="12.5">11  Public services and gaming</text>
-<rect x="290.0" y="398" width="94.3" height="16" fill="#2ea043"/>
-<rect x="384.3" y="398" width="141.4" height="16" fill="#d29922"/>
-<rect x="525.7" y="398" width="94.3" height="16" fill="#6e7681"/>
+<rect x="290.0" y="398" width="123.8" height="16" fill="#2ea043"/>
+<rect x="413.8" y="398" width="123.8" height="16" fill="#d29922"/>
+<rect x="537.5" y="398" width="82.5" height="16" fill="#6e7681"/>
 <rect x="290" y="398" width="330" height="16" rx="3" fill="none" stroke="#30363d"/>
-<text x="634" y="410" font-size="12" fill="#8b949e">2 of 7 done</text>
-<text x="24" y="460" font-size="11" fill="#8b949e">Counts are the top-level checkboxes of docs/plan.md (77 items: 30 done, 30 in progress, 17 open). Generated by scripts/gen-status.py.</text>
+<text x="634" y="410" font-size="12" fill="#8b949e">3 of 8 done</text>
+<text x="24" y="460" font-size="11" fill="#8b949e">Counts are the top-level checkboxes of docs/plan.md (84 items: 48 done, 21 in progress, 15 open). Generated by scripts/gen-status.py.</text>
 </g></svg>
